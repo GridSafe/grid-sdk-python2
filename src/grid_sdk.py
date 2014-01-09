@@ -20,7 +20,7 @@ class GridSdk(object):
         self.signature = USER_SIGNATURE if not signature else signature
         self.api_url = "https://www.cdnzz.com/api/json"
 
-    def __request(self, url, method):
+    def __request(self, urls, method):
         """post 数据
 
         :param url: 进行清缓存或者预加载的url
@@ -30,7 +30,7 @@ class GridSdk(object):
             "user": self.user_name,
             "signature": self.signature,
             "method": method,
-            "url": url
+            "url": urls
         }
         try:
             response = requests.post(self.api_url, data=post_data)
@@ -44,14 +44,13 @@ class GridSdk(object):
 
         return True, rv["msg"]
 
-    def __validate_url(self, url):
+    def __validate_urls(self, urls):
         """判断一个url 是否合乎规范
 
         :param url: 需要进行判断的URL
 
         :return boolean
         """
-
         # django url validator
         regex = re.compile(
             r'^(?:http|ftp)s?://'  # http:// or https://
@@ -63,29 +62,39 @@ class GridSdk(object):
             r'\[?[A-F0-9]*:[A-F0-9:]+\]?)'  # ...or ipv6
             r'(?::\d+)?'  # optional port
             r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+        try:
+            urls = urls.split(",")
+            rv = []
+            for url in urls:
+                if not regex.search(url):
+                    continue
+                rv.append(url)
+            return ",".join(rv)
+        except:
+            return ""
 
-        return url is not None and regex.search(url)
-
-    def preload(self, url):
+    def preload(self, urls):
         """预加载指定的链接
 
         :param url: 要进行预加载的链接
 
         :return (boolean, msg): 是否完成，相关的信息
         """
-        if not self.__validate_url(url):
+        urls = self.__validate_urls(urls)
+        if not urls:
             return False, "URL invalid"
 
-        return self.__request(url, "AddPreload")
+        return self.__request(urls, "AddPreload")
 
-    def purge_cache(self, url):
+    def purge_cache(self, urls):
         """通过指定链接清除缓存
 
         :param url: 要清除缓存的链接
 
         :return (boolean, msg): 是否完成，相关的信息
         """
-        if not self.__validate_url(url):
+        urls = self.__validate_urls(urls)
+        if not urls:
             return False, "URL invalid"
 
-        return self.__request(url, "PurgeCache")
+        return self.__request(urls, "PurgeCache")

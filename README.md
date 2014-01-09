@@ -35,7 +35,7 @@ api文档地址：https://www.cdnzz.com/help/user_api
   ```
   example = GridSdk()
   src_url = "url"
-  example.preload(src_url)
+  example.preload(src_url)  # url 支持以逗号分隔一次提交多条
   example.purge_cache(src_url)
   ```
 
