@@ -30,18 +30,32 @@ api文档地址：https://www.cdnzz.com/help/user_api
   from grid_sdk import GridSdk
   ```
 
-3. 调用相应的操作
+## Example
+
+  预加载 / 清缓存 单条记录
 
   ```
   example = GridSdk()
-  src_url = "url"
-  example.preload(src_url)  # url 支持以逗号分隔一次提交多条
+  src_url = "http://www.cdnzz.com/help/user_api"
+  example.preload(src_url)
   example.purge_cache(src_url)
   ```
 
+  多条记录
+  ```
+  example = GridSdk()
+  src_url = "http://www.cdnzz.com/help/user_api,http://www.cdnzz.com/help/user_api"
+  example.preload(src_url)
+  example.purge_cache(src_url)
+  ```
+
+  **一次提交多条记录时，最多为100条**
+
 ## Requirements
 
-Please see 'requires' file.
+```
+pip2 install requests
+```
 
 ## Change Log
 
